@@ -1,0 +1,15 @@
+name: farmared
+
+# TODO, placeholder
+services:
+  placeholder:
+    image: alpine:3.20
+    container_name: farmared-placeholder
+    command: ["sh", "-c", "echo 'FarmaRed: compose base OK'; sleep infinity"]
+    restart: "no"
+    networks:
+      - farmared-net
+
+networks:
+  farmared-net:
+    driver: bridge
