@@ -1,0 +1,50 @@
+{
+  "name": "FarmaRed-BD2-TPO",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint"
+    ],
+    "*.md": "prettier --write",
+    "*.css": "prettier --write"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@12.18.0",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.7.0",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.72.1"
+  },
+  "dependencies": {
+    "cassandra-driver": "^4.10.0",
+    "csv-parse": "^7.0.3",
+    "dayjs": "^1.11.23",
+    "dotenv": "^18.0.9",
+    "mongodb": "^7.8.0",
+    "zod": "^4.6.7"
+  }
+}

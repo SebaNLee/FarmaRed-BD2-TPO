@@ -1,0 +1,28 @@
+{
+  "name": "FarmaRed",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/node:2": {
+      "version": "26",
+      "pnpmVersion": "12.18.0"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {}
+  },
+  "postCreateCommand": "pnpm install --frozen-lockfile && cp -n .env.example .env",
+  "postStartCommand": "docker compose up -d --wait --wait-timeout 600",
+  "forwardPorts": [27017, 9042],
+  "containerEnv": {
+    "TZ": "America/Argentina/Buenos_Aires"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "mongodb.mongodb-vscode",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}
