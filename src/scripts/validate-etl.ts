@@ -1,4 +1,5 @@
 import { loadFarmaRedData } from "../etl/load-data.js";
+import { assembleVentasConDetalles } from "../etl/assemblers/assemble-ventas-con-detalles.js";
 import { validateData } from "../etl/validators/index.js";
 
 /* Uso temporal para validar el ETL. Se puede ejecutar con el comando:
@@ -9,6 +10,7 @@ import { validateData } from "../etl/validators/index.js";
 async function main(): Promise<void> {
   const data = await loadFarmaRedData();
   validateData(data);
+  const ventasConDetalles = assembleVentasConDetalles(data.ventas, data.detallesVenta);
 
   console.log("ETL válido: parseo e integridad verificados.");
   console.log(`Clientes: ${data.clientes.length}`);
@@ -20,6 +22,7 @@ async function main(): Promise<void> {
   console.log(`Lotes de stock: ${data.lotesStock.length}`);
   console.log(`Ventas: ${data.ventas.length}`);
   console.log(`Detalles de venta: ${data.detallesVenta.length}`);
+  console.log(`Ventas con detalles: ${ventasConDetalles.length}`);
 }
 
 main().catch((error: unknown) => {
