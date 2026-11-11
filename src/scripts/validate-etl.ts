@@ -1,4 +1,5 @@
 import { loadFarmaRedData } from "../etl/load-data.js";
+import { validateData } from "../etl/validators/index.js";
 
 /* Uso temporal para validar el ETL. Se puede ejecutar con el comando:
  ** pnpm install
@@ -7,8 +8,9 @@ import { loadFarmaRedData } from "../etl/load-data.js";
 
 async function main(): Promise<void> {
   const data = await loadFarmaRedData();
+  validateData(data);
 
-  console.log("ETL válido");
+  console.log("ETL válido: parseo e integridad verificados.");
   console.log(`Clientes: ${data.clientes.length}`);
   console.log(`Proveedores: ${data.proveedores.length}`);
   console.log(`Productos: ${data.productos.length}`);
