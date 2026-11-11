@@ -32,10 +32,6 @@ export type FarmaRedData = {
   detallesVenta: DetalleVenta[];
 };
 
-/**
- * Reads every source CSV and transforms each raw row into a domain model.
- * No relational validation or database writes are performed here.
- */
 export async function loadFarmaRedData(dataDirectory = defaultDataDirectory): Promise<FarmaRedData> {
   const [clientes, proveedores, productos, sucursales, farmaceuticos, recetas, lotesStock, ventas, detallesVenta] =
     await Promise.all([

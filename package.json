@@ -11,7 +11,8 @@
     "prepare": "husky",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "etl:validate": "tsx src/scripts/validate-etl.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
