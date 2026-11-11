@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "etl:validate": "tsx src/scripts/validate-etl.ts"
+    "etl:validate": "tsx src/scripts/validate-etl.ts",
+    "db:check": "tsx src/scripts/check-connections.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
