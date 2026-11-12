@@ -2,7 +2,7 @@ import type { CondicionVenta } from "../../models/producto.js";
 import type { TipoProveedor } from "../../models/proveedor.js";
 
 export type ProductosActivosByBucketRow = {
-  bucket: number;
+  bucket: 0;
   productoId: string;
   productoNombre: string;
   principioActivo: string;
