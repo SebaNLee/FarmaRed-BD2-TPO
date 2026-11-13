@@ -1,14 +1,20 @@
 import type { Producto } from "../../../models/producto.js";
 import type { Proveedor } from "../../../models/proveedor.js";
-import type { ProductosActivosByBucketRow } from "../../../schemas/cassandra/productos-activos-by-bucket.js";
+import {
+  catalogoFarmaRed,
+  type ProductosActivosPorCatalogoRow,
+} from "../../../schemas/cassandra/productos-activos-por-catalogo.js";
 
-export function toProductosActivosByBucketRow(producto: Producto, proveedor: Proveedor): ProductosActivosByBucketRow {
+export function toProductosActivosPorCatalogoRow(
+  producto: Producto,
+  proveedor: Proveedor,
+): ProductosActivosPorCatalogoRow {
   if (!producto.activo) {
     throw new Error(`No se puede crear una fila de productos activos para ${producto.id}.`);
   }
 
   return {
-    bucket: 0,
+    catalogo: catalogoFarmaRed,
     productoId: producto.id,
     productoNombre: producto.nombre,
     principioActivo: producto.principioActivo,

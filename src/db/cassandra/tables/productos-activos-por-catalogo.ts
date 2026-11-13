@@ -1,11 +1,11 @@
 import type { Client } from "cassandra-driver";
 
-export const productosActivosByBucketTable = "productos_activos_by_bucket";
+export const productosActivosPorCatalogoTable = "productos_activos_por_catalogo";
 
-export async function setupProductosActivosByBucketTable(client: Client, keyspace: string): Promise<void> {
+export async function setupProductosActivosPorCatalogoTable(client: Client, keyspace: string): Promise<void> {
   await client.execute(`
-    CREATE TABLE IF NOT EXISTS ${keyspace}.${productosActivosByBucketTable} (
-      bucket int,
+    CREATE TABLE IF NOT EXISTS ${keyspace}.${productosActivosPorCatalogoTable} (
+      catalogo text,
       producto_id text,
       producto_nombre text,
       principio_activo text,
@@ -21,7 +21,7 @@ export async function setupProductosActivosByBucketTable(client: Client, keyspac
       proveedor_provincia text,
       proveedor_telefono text,
       proveedor_activo boolean,
-      PRIMARY KEY ((bucket), producto_id)
+      PRIMARY KEY ((catalogo), producto_id)
     )
   `);
 }

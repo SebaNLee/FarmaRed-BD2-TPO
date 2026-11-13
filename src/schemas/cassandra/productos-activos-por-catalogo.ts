@@ -1,8 +1,10 @@
 import type { CondicionVenta } from "../../models/producto.js";
 import type { TipoProveedor } from "../../models/proveedor.js";
 
-export type ProductosActivosByBucketRow = {
-  bucket: 0; // esto noc q one, se podria usar mas pero cuanto es medio arbitrario
+export const catalogoFarmaRed = "farmared";
+
+export type ProductosActivosPorCatalogoRow = {
+  catalogo: typeof catalogoFarmaRed;
   productoId: string;
   productoNombre: string;
   principioActivo: string;
