@@ -5,12 +5,17 @@ services:
     image: mongo:9.0.2
     container_name: farmared-mongo
     restart: unless-stopped
+    command: ["--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      test:
+        [
+          "CMD-SHELL",
+          'mongosh --quiet --eval ''try { rs.status().ok } catch (e) { rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "127.0.0.1:27017" }] }).ok }''',
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -35,7 +40,7 @@ services:
     volumes:
       - cassandra-data:/var/lib/cassandra
     healthcheck:
-      test: ["CMD-SHELL", "nodetool status | grep -E '^UN' > /dev/null"]
+      test: ["CMD-SHELL", "cqlsh -e 'SELECT release_version FROM system.local' > /dev/null 2>&1"]
       interval: 15s
       timeout: 10s
       retries: 30
