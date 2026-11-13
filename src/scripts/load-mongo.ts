@@ -19,7 +19,7 @@ async function main(): Promise<void> {
     await repository.upsertData(data, ventasConDetalles);
 
     const counts = await repository.getDocumentCounts();
-    console.log("Carga MongoDB completada.");
+    console.log("MongoDB load completed.");
     for (const [collection, count] of Object.entries(counts)) {
       console.log(`${collection}: ${count}`);
     }
@@ -30,6 +30,6 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`Error al cargar MongoDB: ${message}`);
+  console.error(`Error loading MongoDB: ${message}`);
   process.exitCode = 1;
 });

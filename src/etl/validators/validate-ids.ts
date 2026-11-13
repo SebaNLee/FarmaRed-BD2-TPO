@@ -18,19 +18,19 @@ function findDuplicateIds(items: Identifiable[]): string[] {
 }
 
 function validateUniqueIds(entityName: string, items: Identifiable[]): string[] {
-  return findDuplicateIds(items).map((id) => `${entityName}: ID duplicado "${id}".`);
+  return findDuplicateIds(items).map((id) => `${entityName}: duplicate ID "${id}".`);
 }
 
 export function validateIds(data: FarmaRedData): string[] {
   return [
-    ...validateUniqueIds("Clientes", data.clientes),
-    ...validateUniqueIds("Proveedores", data.proveedores),
-    ...validateUniqueIds("Productos", data.productos),
-    ...validateUniqueIds("Sucursales", data.sucursales),
-    ...validateUniqueIds("Farmacéuticos", data.farmaceuticos),
-    ...validateUniqueIds("Recetas", data.recetas),
-    ...validateUniqueIds("Lotes de stock", data.lotesStock),
-    ...validateUniqueIds("Ventas", data.ventas),
-    ...validateUniqueIds("Detalles de venta", data.detallesVenta),
+    ...validateUniqueIds("Clients", data.clientes),
+    ...validateUniqueIds("Providers", data.proveedores),
+    ...validateUniqueIds("Products", data.productos),
+    ...validateUniqueIds("Branches", data.sucursales),
+    ...validateUniqueIds("Pharmacists", data.farmaceuticos),
+    ...validateUniqueIds("Prescriptions", data.recetas),
+    ...validateUniqueIds("Stock lots", data.lotesStock),
+    ...validateUniqueIds("Sales", data.ventas),
+    ...validateUniqueIds("Sale details", data.detallesVenta),
   ];
 }

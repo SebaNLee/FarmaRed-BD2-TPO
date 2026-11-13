@@ -13,7 +13,7 @@ export function parseDetalleVenta(row: DetalleVentaCsvRow): DetalleVenta {
   const cantidad = parseNonNegativeInteger(row.cantidad, "cantidad");
 
   if (cantidad === 0) {
-    throw new Error("El campo cantidad debe ser mayor que cero.");
+    throw new Error("Field cantidad must be greater than zero.");
   }
 
   return {

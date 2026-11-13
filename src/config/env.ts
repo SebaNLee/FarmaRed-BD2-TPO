@@ -14,7 +14,7 @@ const parsedEnv = envSchema.safeParse(process.env);
 
 if (!parsedEnv.success) {
   const issues = parsedEnv.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("\n- ");
-  throw new Error(`Configuración de entorno inválida:\n- ${issues}`);
+  throw new Error(`Invalid environment configuration:\n- ${issues}`);
 }
 
 export const env = parsedEnv.data;
@@ -31,7 +31,7 @@ export function parseCassandraEndpoints(rawContactPoints: string): CassandraEndp
     .filter(Boolean);
 
   if (entries.length === 0) {
-    throw new Error("CASSANDRA_CONTACT_POINTS no puede estar vacío.");
+    throw new Error("CASSANDRA_CONTACT_POINTS cannot be empty.");
   }
 
   const parsedEntries = entries.map((entry) => {
@@ -39,7 +39,7 @@ export function parseCassandraEndpoints(rawContactPoints: string): CassandraEndp
     const port = rawPort === undefined ? 9042 : Number(rawPort);
 
     if (!host || !Number.isInteger(port) || port <= 0) {
-      throw new Error(`Contact point inválido: "${entry}". Formato esperado: host:puerto.`);
+      throw new Error(`Invalid contact point: "${entry}". Expected format: host:port.`);
     }
 
     return { host, port };
@@ -49,7 +49,7 @@ export function parseCassandraEndpoints(rawContactPoints: string): CassandraEndp
   const inconsistentPort = parsedEntries.find((entry) => entry.port !== port);
 
   if (inconsistentPort) {
-    throw new Error("Todos los contact points deben usar el mismo puerto.");
+    throw new Error("All contact points must use the same port.");
   }
 
   return {

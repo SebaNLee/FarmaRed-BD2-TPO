@@ -7,7 +7,7 @@ import { validateUniqueKeys } from "./validate-unique-keys.js";
 
 export class IntegrityValidationError extends Error {
   constructor(readonly issues: string[]) {
-    super(`Se encontraron ${issues.length} errores de integridad:\n- ${issues.join("\n- ")}`);
+    super(`Found ${issues.length} integrity errors:\n- ${issues.join("\n- ")}`);
     this.name = "IntegrityValidationError";
   }
 }

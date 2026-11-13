@@ -12,6 +12,6 @@ export function validateSaleTotals(data: FarmaRedData): string[] {
     .filter((venta) => venta.total !== (totalsBySale.get(venta.id) ?? 0))
     .map((venta) => {
       const expected = totalsBySale.get(venta.id) ?? 0;
-      return `Venta ${venta.id}: total declarado ${venta.total}, total de detalles ${expected}.`;
+      return `Sale ${venta.id}: declared total ${venta.total}, sale detail total ${expected}.`;
     });
 }

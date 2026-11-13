@@ -23,10 +23,10 @@ function findDuplicateValues<T extends object>(items: T[], key: keyof T & string
 
 export function validateUniqueKeys(data: FarmaRedData): string[] {
   return [
-    ...findDuplicateValues(data.clientes, "dni").map((dni) => `Clientes: DNI duplicado "${dni}".`),
+    ...findDuplicateValues(data.clientes, "dni").map((dni) => `Clients: duplicate DNI "${dni}".`),
     ...findDuplicateValues(data.farmaceuticos, "matricula").map(
-      (matricula) => `Farmacéuticos: matrícula duplicada "${matricula}".`,
+      (matricula) => `Pharmacists: duplicate license number "${matricula}".`,
     ),
-    ...findDuplicateValues(data.proveedores, "cuit").map((cuit) => `Proveedores: CUIT duplicado "${cuit}".`),
+    ...findDuplicateValues(data.proveedores, "cuit").map((cuit) => `Providers: duplicate CUIT "${cuit}".`),
   ];
 }
