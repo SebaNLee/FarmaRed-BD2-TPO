@@ -1,4 +1,4 @@
-import type { Collection, Db, Document } from "mongodb";
+import type { AnyBulkWriteOperation, Collection, Db, Document, Filter, WithoutId } from "mongodb";
 import type { FarmaRedData } from "../../etl/load-data.js";
 import type { DetalleVenta } from "../../models/detalle-venta.js";
 import type { VentaConDetalles } from "../../models/venta-con-detalles.js";
@@ -6,7 +6,6 @@ import { mongoCollectionNames, type MongoCollectionName } from "../../db/mongo/s
 import type { ClienteMongoDocument } from "../../schemas/mongo/cliente.js";
 import type { MongoDocument } from "../../schemas/mongo/common.js";
 import type { FarmaceuticoMongoDocument } from "../../schemas/mongo/farmaceutico.js";
-import type { LoteStockMongoDocument } from "../../schemas/mongo/lote-stock.js";
 import type { ProductoMongoDocument } from "../../schemas/mongo/producto.js";
 import type { ProveedorMongoDocument } from "../../schemas/mongo/proveedor.js";
 import type { RecetaMongoDocument } from "../../schemas/mongo/receta.js";
@@ -44,7 +43,6 @@ export class MongoFarmaRedRepository {
   private readonly sucursales: Collection<SucursalMongoDocument>;
   private readonly farmaceuticos: Collection<FarmaceuticoMongoDocument>;
   private readonly recetas: Collection<RecetaMongoDocument>;
-  private readonly lotesStock: Collection<LoteStockMongoDocument>;
   private readonly ventas: Collection<VentaMongoDocument>;
 
   constructor(private readonly db: Db) {
@@ -54,7 +52,6 @@ export class MongoFarmaRedRepository {
     this.sucursales = db.collection<SucursalMongoDocument>("sucursales");
     this.farmaceuticos = db.collection<FarmaceuticoMongoDocument>("farmaceuticos");
     this.recetas = db.collection<RecetaMongoDocument>("recetas");
-    this.lotesStock = db.collection<LoteStockMongoDocument>("stock_lotes");
     this.ventas = db.collection<VentaMongoDocument>("ventas");
   }
 
@@ -65,7 +62,6 @@ export class MongoFarmaRedRepository {
     await this.replaceMany(this.farmaceuticos, data.farmaceuticos.map(toMongoDocument));
     await this.replaceMany(this.clientes, data.clientes.map(toMongoDocument));
     await this.replaceMany(this.recetas, data.recetas.map(toMongoDocument));
-    await this.replaceMany(this.lotesStock, data.lotesStock.map(toMongoDocument));
     await this.replaceMany(this.ventas, ventasConDetalles.map(toVentaMongoDocument));
   }
 
@@ -88,15 +84,18 @@ export class MongoFarmaRedRepository {
       return;
     }
 
-    await collection.bulkWrite(
-      documents.map((document) => ({
+    const operations = documents.map((document): AnyBulkWriteOperation<T> => {
+      const { _id, ...replacement } = document;
+
+      return {
         replaceOne: {
-          filter: { _id: document._id },
-          replacement: document,
+          filter: { _id } as Filter<T>,
+          replacement: replacement as WithoutId<T>,
           upsert: true,
         },
-      })),
-      { ordered: true },
-    );
+      };
+    });
+
+    await collection.bulkWrite(operations, { ordered: true });
   }
 }
