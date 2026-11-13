@@ -1,5 +1,5 @@
 import type { DetalleVenta } from "../../models/detalle-venta.js";
-import { parseNonNegativeInteger, parseNumber, required } from "./shared.js";
+import { parseNonNegativeInteger, required } from "./shared.js";
 
 export type DetalleVentaCsvRow = {
   id_detalle: string;
@@ -21,6 +21,6 @@ export function parseDetalleVenta(row: DetalleVentaCsvRow): DetalleVenta {
     ventaId: required(row.id_venta, "id_venta"),
     productoId: required(row.id_producto, "id_producto"),
     cantidad,
-    precioUnitario: parseNumber(row.precio_unit, "precio_unit"),
+    precioUnitario: parseNonNegativeInteger(row.precio_unit, "precio_unit"),
   };
 }

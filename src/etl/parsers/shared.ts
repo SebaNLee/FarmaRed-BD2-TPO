@@ -51,7 +51,7 @@ export function parseDate(value: string, field: string): Date {
 
   const date = new Date(`${normalized}T00:00:00.000Z`);
 
-  if (Number.isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== normalized) {
     throw new Error(`El campo ${field} contiene una fecha inválida.`);
   }
 
