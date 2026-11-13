@@ -1,9 +1,9 @@
 import { MongoClient } from "mongodb";
+import { env } from "./env.js";
 
-const mongoUri = "mongodb://127.0.0.1:27017";
-export const mongoDatabaseName = "farmared";
+export const mongoDatabaseName = env.MONGO_DB;
 
-export const mongoClient = new MongoClient(mongoUri);
+export const mongoClient = new MongoClient(env.MONGO_URI);
 
 export async function connectMongo(): Promise<MongoClient> {
   await mongoClient.connect();

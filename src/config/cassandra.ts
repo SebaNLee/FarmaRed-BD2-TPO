@@ -1,8 +1,14 @@
 import { Client } from "cassandra-driver";
+import { env, parseCassandraEndpoints } from "./env.js";
+
+const cassandraEndpoint = parseCassandraEndpoints(env.CASSANDRA_CONTACT_POINTS);
 
 export const cassandraClient = new Client({
-  contactPoints: ["127.0.0.1"],
-  localDataCenter: "datacenter1",
+  contactPoints: cassandraEndpoint.contactPoints,
+  localDataCenter: env.CASSANDRA_LOCAL_DATACENTER,
+  protocolOptions: {
+    port: cassandraEndpoint.port,
+  },
 });
 
 export async function connectCassandra(): Promise<Client> {

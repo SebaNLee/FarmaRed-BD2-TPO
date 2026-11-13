@@ -7,7 +7,7 @@ async function main(): Promise<void> {
     const db = client.db(mongoDatabaseName);
 
     await setupMongoDatabase(db);
-    console.log(`MongoDB preparado: base "${mongoDatabaseName}" y colecciones creadas.`);
+    console.log(`MongoDB ready: database "${mongoDatabaseName}" and collections created.`);
   } finally {
     await closeMongo();
   }
@@ -15,6 +15,6 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`Error al preparar MongoDB: ${message}`);
+  console.error(`Error setting up MongoDB: ${message}`);
   process.exitCode = 1;
 });

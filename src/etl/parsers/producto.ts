@@ -1,5 +1,5 @@
 import type { CondicionVenta, Producto } from "../../models/producto.js";
-import { parseBoolean, parseNumber, parseOneOf, required } from "./shared.js";
+import { parseBoolean, parseNonNegativeInteger, parseOneOf, required } from "./shared.js";
 
 export type ProductoCsvRow = {
   id_producto: string;
@@ -27,7 +27,7 @@ export function parseProducto(row: ProductoCsvRow): Producto {
     categoria: required(row.categoria, "categoria"),
     presentacion: required(row.presentacion, "presentacion"),
     condicionVenta: parseOneOf(row.condicion_venta, "condicion_venta", condicionesVenta),
-    precioUnitario: parseNumber(row.precio_unit, "precio_unit"),
+    precioUnitario: parseNonNegativeInteger(row.precio_unit, "precio_unit"),
     proveedorId: required(row.id_proveedor, "id_proveedor"),
     activo: parseBoolean(row.activo, "activo"),
   };

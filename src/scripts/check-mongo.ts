@@ -14,13 +14,13 @@ async function main(): Promise<void> {
     const missingCollections = mongoCollectionNames.filter((name) => !existingCollections.has(name));
 
     if (missingCollections.length > 0) {
-      throw new Error(`Faltan colecciones: ${missingCollections.join(", ")}. Ejecutá "pnpm mongo:setup".`);
+      throw new Error(`Missing collections: ${missingCollections.join(", ")}. Run "pnpm mongo:setup".`);
     }
 
     const repository = new MongoFarmaRedRepository(db);
     const counts = await repository.getDocumentCounts();
 
-    console.log(`MongoDB disponible: base "${mongoDatabaseName}".`);
+    console.log(`MongoDB available: database "${mongoDatabaseName}".`);
     for (const [collection, count] of Object.entries(counts)) {
       console.log(`${collection}: ${count}`);
     }
@@ -31,6 +31,6 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`Error al verificar MongoDB: ${message}`);
+  console.error(`Error checking MongoDB: ${message}`);
   process.exitCode = 1;
 });

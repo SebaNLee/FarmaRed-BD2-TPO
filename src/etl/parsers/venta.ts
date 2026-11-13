@@ -1,5 +1,5 @@
 import type { EstadoVenta, MedioPago, TipoVenta, Venta } from "../../models/venta.js";
-import { nullable, parseDate, parseNumber, parseOneOf, required } from "./shared.js";
+import { nullable, parseDate, parseNonNegativeInteger, parseOneOf, required } from "./shared.js";
 
 export type VentaCsvRow = {
   id_venta: string;
@@ -32,7 +32,7 @@ export function parseVenta(row: VentaCsvRow): Venta {
     fecha: parseDate(row.fecha, "fecha"),
     tipo: parseOneOf(row.tipo, "tipo", tiposVenta),
     medioPago: parseOneOf(row.medio_pago, "medio_pago", mediosPago),
-    total: parseNumber(row.total, "total"),
+    total: parseNonNegativeInteger(row.total, "total"),
     estado: parseOneOf(row.estado, "estado", estadosVenta),
   };
 }

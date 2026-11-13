@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Cliente } from "../models/cliente.js";
 import type { DetalleVenta } from "../models/detalle-venta.js";
@@ -18,7 +20,8 @@ import { loadRecetas } from "./loaders/load-recetas.js";
 import { loadSucursales } from "./loaders/load-sucursales.js";
 import { loadVentas } from "./loaders/load-ventas.js";
 
-const defaultDataDirectory = fileURLToPath(new URL("../../data/provided/", import.meta.url));
+const providedDataDirectory = fileURLToPath(new URL("../../data/provided/", import.meta.url));
+const extraDataDirectory = fileURLToPath(new URL("../../data/extra/", import.meta.url));
 
 export type FarmaRedData = {
   clientes: Cliente[];
@@ -32,18 +35,34 @@ export type FarmaRedData = {
   detallesVenta: DetalleVenta[];
 };
 
-export async function loadFarmaRedData(dataDirectory = defaultDataDirectory): Promise<FarmaRedData> {
+function emptyData(): FarmaRedData {
+  return {
+    clientes: [],
+    proveedores: [],
+    productos: [],
+    sucursales: [],
+    farmaceuticos: [],
+    recetas: [],
+    lotesStock: [],
+    ventas: [],
+    detallesVenta: [],
+  };
+}
+
+async function loadDirectory(dataDirectory: string, optional: boolean): Promise<FarmaRedData> {
+  const shouldLoad = (fileName: string): boolean => !optional || existsSync(join(dataDirectory, fileName));
+
   const [clientes, proveedores, productos, sucursales, farmaceuticos, recetas, lotesStock, ventas, detallesVenta] =
     await Promise.all([
-      loadClientes(dataDirectory),
-      loadProveedores(dataDirectory),
-      loadProductos(dataDirectory),
-      loadSucursales(dataDirectory),
-      loadFarmaceuticos(dataDirectory),
-      loadRecetas(dataDirectory),
-      loadLotesStock(dataDirectory),
-      loadVentas(dataDirectory),
-      loadDetallesVenta(dataDirectory),
+      shouldLoad("clientes.csv") ? loadClientes(dataDirectory) : Promise.resolve([]),
+      shouldLoad("proveedores.csv") ? loadProveedores(dataDirectory) : Promise.resolve([]),
+      shouldLoad("productos.csv") ? loadProductos(dataDirectory) : Promise.resolve([]),
+      shouldLoad("sucursales.csv") ? loadSucursales(dataDirectory) : Promise.resolve([]),
+      shouldLoad("farmaceuticos.csv") ? loadFarmaceuticos(dataDirectory) : Promise.resolve([]),
+      shouldLoad("recetas.csv") ? loadRecetas(dataDirectory) : Promise.resolve([]),
+      shouldLoad("stock_lotes.csv") ? loadLotesStock(dataDirectory) : Promise.resolve([]),
+      shouldLoad("ventas.csv") ? loadVentas(dataDirectory) : Promise.resolve([]),
+      shouldLoad("detalle_ventas.csv") ? loadDetallesVenta(dataDirectory) : Promise.resolve([]),
     ]);
 
   return {
@@ -57,4 +76,33 @@ export async function loadFarmaRedData(dataDirectory = defaultDataDirectory): Pr
     ventas,
     detallesVenta,
   };
+}
+
+function mergeData(parts: FarmaRedData[]): FarmaRedData {
+  return parts.reduce<FarmaRedData>(
+    (merged, part) => ({
+      clientes: [...merged.clientes, ...part.clientes],
+      proveedores: [...merged.proveedores, ...part.proveedores],
+      productos: [...merged.productos, ...part.productos],
+      sucursales: [...merged.sucursales, ...part.sucursales],
+      farmaceuticos: [...merged.farmaceuticos, ...part.farmaceuticos],
+      recetas: [...merged.recetas, ...part.recetas],
+      lotesStock: [...merged.lotesStock, ...part.lotesStock],
+      ventas: [...merged.ventas, ...part.ventas],
+      detallesVenta: [...merged.detallesVenta, ...part.detallesVenta],
+    }),
+    emptyData(),
+  );
+}
+
+export async function loadFarmaRedData(
+  dataDirectories: string[] = [providedDataDirectory, extraDataDirectory],
+): Promise<FarmaRedData> {
+  const parts: FarmaRedData[] = [];
+
+  for (const [index, dataDirectory] of dataDirectories.entries()) {
+    parts.push(await loadDirectory(dataDirectory, index > 0));
+  }
+
+  return mergeData(parts);
 }
