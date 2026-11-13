@@ -10,8 +10,8 @@ export type IngresosPorFarmaceutico = {
 };
 
 /**
- * Q11: recibe la base MongoDB y devuelve los ingresos del mes actual de
- * TODOS los farmacéuticos. Suma solo ventas 'Completada'.
+ * Q11: devuelve los ingresos del mes actual de TODOS los farmacéuticos.
+ * Suma solo ventas 'Completada'.
  *
  * // TODO : esto noc si esta bien,
  * si un farmaceutico no tiene ventas completadas, lo incluimos pero con ventas=0
