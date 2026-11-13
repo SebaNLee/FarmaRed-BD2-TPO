@@ -20,6 +20,7 @@
     "q10": "tsx src/scripts/q10.ts",
     "q11": "tsx src/scripts/q11.ts",
     "q12": "tsx src/scripts/q12.ts",
+    "q13": "tsx src/scripts/q13.ts",
     "test:q10": "tsx --test src/queries/q10-clientes-por-sucursal.test.ts",
     "cassandra:setup": "tsx src/scripts/setup-cassandra.ts",
     "cassandra:load": "tsx src/scripts/load-cassandra.ts",
