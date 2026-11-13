@@ -17,6 +17,8 @@
     "mongo:setup": "tsx src/scripts/setup-mongo.ts",
     "mongo:load": "tsx src/scripts/load-mongo.ts",
     "mongo:check": "tsx src/scripts/check-mongo.ts",
+    "q10": "tsx src/scripts/q10.ts",
+    "test:q10": "tsx --test src/queries/q10-clientes-por-sucursal.test.ts",
     "cassandra:setup": "tsx src/scripts/setup-cassandra.ts",
     "cassandra:load": "tsx src/scripts/load-cassandra.ts",
     "cassandra:check": "tsx src/scripts/check-cassandra.ts"
