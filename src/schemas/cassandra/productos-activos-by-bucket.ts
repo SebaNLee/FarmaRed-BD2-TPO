@@ -2,7 +2,7 @@ import type { CondicionVenta } from "../../models/producto.js";
 import type { TipoProveedor } from "../../models/proveedor.js";
 
 export type ProductosActivosByBucketRow = {
-  bucket: 0;
+  bucket: 0; // esto noc q one, se podria usar mas pero cuanto es medio arbitrario
   productoId: string;
   productoNombre: string;
   principioActivo: string;
