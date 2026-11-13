@@ -26,7 +26,6 @@ export async function ingresosPorFarmaceuticoMesActual(db: Db): Promise<Ingresos
   const year = Number(fechaActual.find((part) => part.type === "year")!.value);
   const month = Number(fechaActual.find((part) => part.type === "month")!.value);
 
-  // Las fechas del CSV se almacenan como fechas de calendario a medianoche UTC.
   const inicioMes = new Date(Date.UTC(year, month - 1, 1));
   const inicioMesSiguiente = new Date(Date.UTC(year, month, 1));
 
