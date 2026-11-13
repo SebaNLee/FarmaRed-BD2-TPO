@@ -4,8 +4,9 @@ import type { FarmaceuticoMongoDocument } from "../schemas/mongo/farmaceutico.js
 
 /**
  * Q10: devuelve los clientes atendidos en una sucursal, sin duplicados.
- * Incluye farmacéuticos y clientes inactivos y todos los estados de venta
- * (incluso las 'Anulada', la consigna no especifica si van o no)
+ * Considera ventas registradas por farmacéuticos activos e inactivos,
+ * incluyendo todos los estados de venta, incluso 'Anulada'.
+ * Incluye también clientes inactivos.
  *
  *  retorna clientes ordenados por apellido, nombre e _id;
  */
