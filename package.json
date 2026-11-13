@@ -16,7 +16,9 @@
     "db:check": "tsx src/scripts/check-connections.ts",
     "mongo:setup": "tsx src/scripts/setup-mongo.ts",
     "mongo:load": "tsx src/scripts/load-mongo.ts",
-    "mongo:check": "tsx src/scripts/check-mongo.ts"
+    "mongo:check": "tsx src/scripts/check-mongo.ts",
+    "cassandra:load": "tsx src/scripts/load-cassandra.ts",
+    "q01": "tsx src/scripts/q01.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
