@@ -17,10 +17,17 @@
 
 <!-- TODO guia devcontainers -->
 
-
 ### Data
 
 ### Queries
+
+#### q01 — Productos activos con todos los datos de su proveedor
+
+```bash
+docker compose up -d --wait cassandra
+pnpm cassandra:load
+pnpm q01
+```
 
 ## Devs
 
