@@ -1,7 +1,9 @@
 import type { Client } from "cassandra-driver";
-import { setupProductosActivosByBucketTable } from "./tables/productos-activos-by-bucket.js";
+import { env } from "../../config/env.js";
+import { setupStockLotesTable } from "./tables/stock-lotes.js";
+import { setupStockMovimientosTable } from "./tables/stock-movimientos.js";
 
-export const cassandraKeyspace = "farmared";
+export const cassandraKeyspace = env.CASSANDRA_KEYSPACE;
 
 async function setupKeyspace(client: Client): Promise<void> {
   await client.execute(`
@@ -15,5 +17,6 @@ async function setupKeyspace(client: Client): Promise<void> {
 
 export async function setupCassandraDatabase(client: Client): Promise<void> {
   await setupKeyspace(client);
-  await setupProductosActivosByBucketTable(client, cassandraKeyspace);
+  await setupStockLotesTable(client, cassandraKeyspace);
+  await setupStockMovimientosTable(client, cassandraKeyspace);
 }
