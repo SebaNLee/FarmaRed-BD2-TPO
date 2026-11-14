@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { MongoServerError, type Db } from "mongodb";
 import { z } from "zod";
 import type { Cliente } from "../models/cliente.js";
@@ -18,7 +19,6 @@ const contactoCoberturaSchema = z.object({
 });
 const altaSchema = contactoCoberturaSchema
   .extend({
-    id: texto,
     nombre: texto,
     apellido: texto,
     dni: texto,
@@ -37,11 +37,11 @@ export type ModificacionCliente = Partial<
 >;
 
 /** Q13 alta: recibe datos del cliente y devuelve el documento creado en MongoDB.
- * Crea clientes activos; requiere el índice único de DNI de mongo:setup.
+ * Genera un UUID y crea clientes activos; requiere el índice único de DNI de mongo:setup.
  */
-export async function altaCliente(db: Db, datos: Omit<Cliente, "activo">): Promise<ClienteMongoDocument> {
-  const { id, ...campos } = altaSchema.parse(datos);
-  const cliente: ClienteMongoDocument = { _id: id, ...campos, activo: true };
+export async function altaCliente(db: Db, datos: Omit<Cliente, "id" | "activo">): Promise<ClienteMongoDocument> {
+  const campos = altaSchema.parse(datos);
+  const cliente: ClienteMongoDocument = { _id: randomUUID(), ...campos, activo: true };
 
   try {
     await db.collection<ClienteMongoDocument>("clientes").insertOne(cliente);
