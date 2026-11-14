@@ -21,6 +21,12 @@
 
 ### Queries
 
+Requieren MongoDB levantado y `pnpm mongo:setup` / `pnpm mongo:load` ejecutados. Todas usan MongoDB, reciben `db` en sus funciones y los scripts imprimen el resultado en JSON.
+
+| Consulta / propósito                         | Comando y parámetros                   | Retorno                                                                                                                                                                                          |
+| -------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| q6: recetas prolongadas con dispensa vencida | `pnpm q6` (sin parámetros adicionales) | Recetas de tratamiento prolongado vigentes con `proximaDispensa` anterior a hoy, con el cliente embebido en `cliente`; incluye clientes inactivos y ordena de la más atrasada a la más reciente. |
+
 ### Arquitectura
 
 | Motor     | Datos                                                                                              | Motivo                                                                                          |
