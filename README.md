@@ -26,6 +26,7 @@ Requieren MongoDB levantado y `pnpm mongo:setup` / `pnpm mongo:load` ejecutados.
 | Consulta / propósito                         | Comando y parámetros                   | Retorno                                                                                                                                                                                          |
 | -------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | q6: recetas prolongadas con dispensa vencida | `pnpm q6` (sin parámetros adicionales) | Recetas de tratamiento prolongado vigentes con `proximaDispensa` anterior a hoy, con el cliente embebido en `cliente`; incluye clientes inactivos y ordena de la más atrasada a la más reciente. |
+| q7: top 5 productos más vendidos             | `pnpm q7` (sin parámetros adicionales) | Los 5 productos con más unidades vendidas en ventas completadas, con sus datos y `unidadesVendidas`; incluye inactivos y desempata por ID.                                                       |
 
 ### Arquitectura
 
