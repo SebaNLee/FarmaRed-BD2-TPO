@@ -8,7 +8,7 @@ async function main(): Promise<void> {
     !["alta", "modificar", "baja"].includes(operacion) ||
     (operacion === "modificar" && !cambiosJson?.trim())
   ) {
-    throw new Error("Uso: pnpm q13 alta '<datos JSON>' | modificar <clienteId> '<cambios JSON>' | baja <clienteId>");
+    throw new Error("Usage: pnpm q13 alta '<data JSON>' | modificar <clientId> '<changes JSON>' | baja <clientId>");
   }
   const datos =
     operacion === "alta" ? JSON.parse(argumento) : operacion === "modificar" ? JSON.parse(cambiosJson) : undefined;

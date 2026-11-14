@@ -29,7 +29,7 @@ const modificacionSchema = contactoCoberturaSchema
   .strict()
   .refine(
     (datos) => Object.values(datos).some((value) => value !== undefined),
-    "Debe indicar al menos un dato de contacto o cobertura.",
+    "Provide at least one contact or coverage field.",
   );
 
 export type ModificacionCliente = Partial<
@@ -48,9 +48,9 @@ export async function altaCliente(db: Db, datos: Omit<Cliente, "activo">): Promi
   } catch (error) {
     if (error instanceof MongoServerError && error.code === 11000) {
       if (error.keyPattern?.dni) {
-        throw new Error(`Ya existe un cliente con DNI ${cliente.dni}.`, { cause: error });
+        throw new Error(`A client with DNI ${cliente.dni} already exists.`, { cause: error });
       }
-      throw new Error(`Ya existe un cliente con ID ${cliente._id}.`, { cause: error });
+      throw new Error(`A client with ID ${cliente._id} already exists.`, { cause: error });
     }
     throw error;
   }
@@ -72,7 +72,7 @@ export async function modificarCliente(
     .findOneAndUpdate({ _id: id }, { $set: campos }, { returnDocument: "after" });
 
   if (!cliente) {
-    throw new Error(`No existe el cliente ${id}.`);
+    throw new Error(`Client ${id} does not exist.`);
   }
   return cliente;
 }
@@ -85,7 +85,7 @@ export async function bajaCliente(db: Db, clienteId: string): Promise<ClienteMon
     .findOneAndUpdate({ _id: id }, { $set: { activo: false } }, { returnDocument: "after" });
 
   if (!cliente) {
-    throw new Error(`No existe el cliente ${id}.`);
+    throw new Error(`Client ${id} does not exist.`);
   }
   return cliente;
 }
