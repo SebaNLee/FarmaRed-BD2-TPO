@@ -15,6 +15,7 @@ export const mongoCollectionNames = [
   "farmaceuticos",
   "recetas",
   "ventas",
+  "operaciones_venta",
 ] as const;
 
 export type MongoCollectionName = (typeof mongoCollectionNames)[number];
@@ -39,6 +40,7 @@ export async function setupMongoDatabase(db: Db): Promise<void> {
   const farmaceuticos = db.collection<FarmaceuticoMongoDocument>("farmaceuticos");
   const recetas = db.collection<RecetaMongoDocument>("recetas");
   const ventas = db.collection<VentaMongoDocument>("ventas");
+  const operaciones = db.collection("operaciones_venta");
 
   await Promise.all([
     clientes.createIndex({ dni: 1 }, { unique: true, name: "unique_dni" }),
@@ -54,5 +56,26 @@ export async function setupMongoDatabase(db: Db): Promise<void> {
     ventas.createIndex({ estado: 1, fecha: -1 }, { name: "by_status_and_date" }),
     ventas.createIndex({ tipo: 1, estado: 1, total: 1 }, { name: "free_sales_by_total" }),
     ventas.createIndex({ "detalles.productoId": 1, estado: 1 }, { name: "completed_sales_by_product" }),
+    operaciones.createIndex({ estado: 1, actualizadoEn: 1 }, { name: "by_state_and_date" }),
+    operaciones.createIndex({ "bloqueo.expiraEn": 1 }, { name: "by_lock_expiration" }),
   ]);
+
+  // Migración desde la versión que usaba idempotencyKey.
+  try {
+    await operaciones.dropIndex("unique_idempotency_key");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!/index not found|ns not found/i.test(message)) {
+      throw error;
+    }
+  }
+
+  try {
+    await operaciones.dropIndex("by_lease_expiration");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!/index not found|ns not found/i.test(message)) {
+      throw error;
+    }
+  }
 }
