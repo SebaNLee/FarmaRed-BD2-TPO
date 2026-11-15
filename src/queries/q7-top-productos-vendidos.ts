@@ -1,8 +1,10 @@
 import type { Db } from "mongodb";
+import type { Producto } from "../models/producto.js";
 import type { ProductoMongoDocument } from "../schemas/mongo/producto.js";
 import type { VentaMongoDocument } from "../schemas/mongo/venta.js";
+import { withId } from "./util/mappers.js";
 
-export type ProductoMasVendido = ProductoMongoDocument & { unidadesVendidas: number };
+export type ProductoMasVendido = Producto & { unidadesVendidas: number };
 
 /**
  * Q7: devuelve los 5 productos con más unidades vendidas, contando solo
@@ -13,9 +15,9 @@ export type ProductoMasVendido = ProductoMongoDocument & { unidadesVendidas: num
 export async function topProductosMasVendidos(db: Db): Promise<ProductoMasVendido[]> {
   const orden = { unidadesVendidas: -1, _id: 1 } as const;
 
-  return db
+  const productos = await db
     .collection<VentaMongoDocument>("ventas")
-    .aggregate<ProductoMasVendido>([
+    .aggregate<ProductoMongoDocument & { unidadesVendidas: number }>([
       { $match: { estado: "Completada" } },
       { $unwind: "$detalles" },
       { $group: { _id: "$detalles.productoId", unidadesVendidas: { $sum: "$detalles.cantidad" } } },
@@ -27,4 +29,6 @@ export async function topProductosMasVendidos(db: Db): Promise<ProductoMasVendid
       { $sort: orden },
     ])
     .toArray();
+
+  return productos.map((producto): ProductoMasVendido => withId(producto));
 }

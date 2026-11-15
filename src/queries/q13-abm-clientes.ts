@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { Cliente } from "../models/cliente.js";
 import { CounterRepository } from "../repositories/mongo/counter-repository.js";
 import type { ClienteMongoDocument } from "../schemas/mongo/cliente.js";
+import { withId } from "./util/mappers.js";
 
 const texto = z.string().trim().min(1);
 const contactoCoberturaSchema = z.object({
@@ -36,10 +37,10 @@ export type ModificacionCliente = Partial<
   Pick<Cliente, "email" | "telefono" | "ciudad" | "provincia" | "obraSocial" | "nroAfiliado">
 >;
 
-/** Q13 alta: recibe datos del cliente y devuelve el documento creado en MongoDB.
+/** Q13 alta: recibe datos del cliente y devuelve el cliente creado.
  * Genera un ID con CounterRepository y crea clientes activos; requiere el índice único de DNI de mongo:setup.
  */
-export async function altaCliente(db: Db, datos: Omit<Cliente, "id" | "activo">): Promise<ClienteMongoDocument> {
+export async function altaCliente(db: Db, datos: Omit<Cliente, "id" | "activo">): Promise<Cliente> {
   const campos = altaSchema.parse(datos);
   const counters = new CounterRepository(db);
   const cliente: ClienteMongoDocument = { _id: await counters.nextId("clientes"), ...campos, activo: true };
@@ -56,15 +57,11 @@ export async function altaCliente(db: Db, datos: Omit<Cliente, "id" | "activo">)
     throw error;
   }
 
-  return cliente;
+  return withId(cliente);
 }
 
 /** Q13 modificación: recibe ID y cambios de contacto/cobertura; devuelve el cliente actualizado en MongoDB. */
-export async function modificarCliente(
-  db: Db,
-  clienteId: string,
-  cambios: ModificacionCliente,
-): Promise<ClienteMongoDocument> {
+export async function modificarCliente(db: Db, clienteId: string, cambios: ModificacionCliente): Promise<Cliente> {
   const id = texto.parse(clienteId);
   const datos = modificacionSchema.parse(cambios);
   const campos = Object.fromEntries(Object.entries(datos).filter(([, value]) => value !== undefined));
@@ -75,11 +72,11 @@ export async function modificarCliente(
   if (!cliente) {
     throw new Error(`Client ${id} does not exist.`);
   }
-  return cliente;
+  return withId(cliente);
 }
 
-/** Q13 baja lógica: recibe el ID y devuelve el documento con activo=false, sin eliminarlo de MongoDB. */
-export async function bajaCliente(db: Db, clienteId: string): Promise<ClienteMongoDocument> {
+/** Q13 baja lógica: recibe el ID y devuelve el cliente con activo=false, sin eliminarlo de MongoDB. */
+export async function bajaCliente(db: Db, clienteId: string): Promise<Cliente> {
   const id = texto.parse(clienteId);
   const cliente = await db
     .collection<ClienteMongoDocument>("clientes")
@@ -88,5 +85,5 @@ export async function bajaCliente(db: Db, clienteId: string): Promise<ClienteMon
   if (!cliente) {
     throw new Error(`Client ${id} does not exist.`);
   }
-  return cliente;
+  return withId(cliente);
 }

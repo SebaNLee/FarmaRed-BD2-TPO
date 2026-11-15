@@ -1,17 +1,21 @@
 import type { Client } from "cassandra-driver";
 import type { Db } from "mongodb";
 import type { LoteStock } from "../models/lote.stock.js";
+import type { Producto } from "../models/producto.js";
+import type { Proveedor } from "../models/proveedor.js";
+import type { Sucursal } from "../models/sucursal.js";
 import { CassandraStockRepository } from "../repositories/cassandra/stock-repository.js";
 import type { ProductoMongoDocument } from "../schemas/mongo/producto.js";
 import type { ProveedorMongoDocument } from "../schemas/mongo/proveedor.js";
 import type { SucursalMongoDocument } from "../schemas/mongo/sucursal.js";
+import { withId } from "./util/mappers.js";
 
 const UNIDADES_MINIMAS = 50;
 
 export type LoteBajoStock = LoteStock & {
-  producto: ProductoMongoDocument;
-  sucursal: SucursalMongoDocument;
-  proveedor: ProveedorMongoDocument;
+  producto: Producto;
+  sucursal: Sucursal;
+  proveedor: Proveedor;
 };
 
 type ProductoConProveedor = ProductoMongoDocument & { proveedor: ProveedorMongoDocument };
@@ -66,7 +70,14 @@ export async function lotesBajoStock(cassandra: Client, db: Db): Promise<LoteBaj
         return [];
       }
       const { proveedor, ...producto } = productoConProveedor;
-      return [{ ...lote, producto, sucursal, proveedor }];
+      return [
+        {
+          ...lote,
+          producto: withId(producto),
+          sucursal: withId(sucursal),
+          proveedor: withId(proveedor),
+        },
+      ];
     })
     .sort((a, b) => a.unidades - b.unidades || a.id.localeCompare(b.id));
 }
