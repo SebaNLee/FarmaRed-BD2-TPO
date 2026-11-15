@@ -23,7 +23,8 @@
     "q1": "tsx src/scripts/q1.ts",
     "q2": "tsx src/scripts/q2.ts",
     "q3": "tsx src/scripts/q3.ts",
-    "q4": "tsx src/scripts/q4.ts"
+    "q4": "tsx src/scripts/q4.ts",
+    "q5": "tsx src/scripts/q5.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
