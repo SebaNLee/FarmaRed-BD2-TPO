@@ -19,7 +19,11 @@
     "mongo:check": "tsx src/scripts/check-mongo.ts",
     "cassandra:setup": "tsx src/scripts/setup-cassandra.ts",
     "cassandra:load": "tsx src/scripts/load-cassandra.ts",
-    "cassandra:check": "tsx src/scripts/check-cassandra.ts"
+    "cassandra:check": "tsx src/scripts/check-cassandra.ts",
+    "q6": "tsx src/scripts/q6.ts",
+    "q7": "tsx src/scripts/q7.ts",
+    "q8": "tsx src/scripts/q8.ts",
+    "q9": "tsx src/scripts/q9.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
