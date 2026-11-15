@@ -1,7 +1,7 @@
-import { randomUUID } from "node:crypto";
 import { MongoServerError, type Db } from "mongodb";
 import { z } from "zod";
 import type { Cliente } from "../models/cliente.js";
+import { CounterRepository } from "../repositories/mongo/counter-repository.js";
 import type { ClienteMongoDocument } from "../schemas/mongo/cliente.js";
 
 const texto = z.string().trim().min(1);
@@ -37,11 +37,12 @@ export type ModificacionCliente = Partial<
 >;
 
 /** Q13 alta: recibe datos del cliente y devuelve el documento creado en MongoDB.
- * Genera un UUID y crea clientes activos; requiere el índice único de DNI de mongo:setup.
+ * Genera un ID con CounterRepository y crea clientes activos; requiere el índice único de DNI de mongo:setup.
  */
 export async function altaCliente(db: Db, datos: Omit<Cliente, "id" | "activo">): Promise<ClienteMongoDocument> {
   const campos = altaSchema.parse(datos);
-  const cliente: ClienteMongoDocument = { _id: randomUUID(), ...campos, activo: true };
+  const counters = new CounterRepository(db);
+  const cliente: ClienteMongoDocument = { _id: await counters.nextId("clientes"), ...campos, activo: true };
 
   try {
     await db.collection<ClienteMongoDocument>("clientes").insertOne(cliente);
