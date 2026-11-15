@@ -20,7 +20,8 @@
     "cassandra:setup": "tsx src/scripts/setup-cassandra.ts",
     "cassandra:load": "tsx src/scripts/load-cassandra.ts",
     "cassandra:check": "tsx src/scripts/check-cassandra.ts",
-    "q1": "tsx src/scripts/q1.ts"
+    "q1": "tsx src/scripts/q1.ts",
+    "q2": "tsx src/scripts/q2.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

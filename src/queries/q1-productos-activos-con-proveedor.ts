@@ -7,7 +7,6 @@ export type ProductoActivoConProveedor = Omit<Producto, "proveedorId"> & {
   proveedor: Proveedor;
 };
 
-/** Query 1: productos activos con todos los datos de su proveedor. */
 export async function findProductosActivosConProveedor(db: Db): Promise<ProductoActivoConProveedor[]> {
   return db
     .collection<ProductoMongoDocument>("productos")
