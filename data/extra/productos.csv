@@ -1,0 +1,11 @@
+id_producto,nombre,principio_activo,categoria,presentacion,condicion_venta,precio_unit,id_proveedor,activo
+PRD014,Cetirizina 10mg x10,Cetirizina,Antihistamínico,Comprimidos x10,Venta libre,2500,PRV006,True
+PRD015,Claritromicina 500mg x14,Claritromicina,Antibiótico,Comprimidos x14,Bajo receta,7800,PRV007,True
+PRD016,Sertralina 50mg x30,Sertralina,Antidepresivo,Comprimidos x30,Bajo receta,6500,PRV008,True
+PRD017,Insulina glargina 100UI/ml,Insulina glargina,Antidiabético,Solución inyectable 10ml,Bajo receta,18500,PRV009,True
+PRD018,Vitamina D3 1000UI x30,Colecalciferol,Suplemento,Comprimidos x30,Venta libre,3200,PRV010,True
+PRD019,Hidrocortisona crema 1% 30g,Hidrocortisona,Corticoide,Crema 30g,Bajo receta,4500,PRV011,True
+PRD020,Test de embarazo,Anticuerpos HCG,Diagnóstico,Test de tira,Venta libre,1800,PRV012,True
+PRD021,Diclofenac gel 1% 50g,Diclofenac,Antiinflamatorio,Gel 50g,Venta libre,2900,PRV013,False
+PRD022,Amoxicilina/clavulánico 875mg x14,Amoxicilina,Antibiótico,Comprimidos x14,Bajo receta archivada,11200,PRV014,True
+PRD023,Alcohol 96% 500ml,Alcohol etílico,Antiséptico,Solución 500ml,Venta libre,1500,PRV015,True
