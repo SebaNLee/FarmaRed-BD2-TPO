@@ -63,6 +63,19 @@ export class CassandraStockRepository {
     return result.rows.map((row) => fromStockLoteRow(row as unknown as StockLoteRow));
   }
 
+  async findLote(sucursalId: string, productoId: string, vencimiento: Date, loteId: string): Promise<LoteStock | null> {
+    const result = await this.client.execute(
+      `SELECT sucursal_id, producto_id, vencimiento, lote_id, nro_lote, unidades
+       FROM ${this.table(stockLotesTable)}
+       WHERE sucursal_id = ? AND producto_id = ? AND vencimiento = ? AND lote_id = ?`,
+      [sucursalId, productoId, toLocalDate(vencimiento), loteId],
+      { prepare: true, consistency: readConsistency },
+    );
+
+    const row = result.rows[0] as unknown as StockLoteRow | undefined;
+    return row === undefined ? null : fromStockLoteRow(row);
+  }
+
   async findAllLotes(): Promise<LoteStock[]> {
     const result = await this.client.execute(
       `SELECT sucursal_id, producto_id, vencimiento, lote_id, nro_lote, unidades
@@ -86,7 +99,7 @@ export class CassandraStockRepository {
   async findMovimientosByVenta(ventaId: string): Promise<MovimientoStock[]> {
     const result = await this.client.execute(
       `SELECT venta_id, lote_id, sucursal_id, producto_id, vencimiento,
-              cantidad, estado, actualizado_en
+              cantidad, unidades_antes, unidades_despues, estado, actualizado_en
        FROM ${this.table(stockMovimientosTable)}
        WHERE venta_id = ?`,
       [ventaId],
@@ -96,18 +109,38 @@ export class CassandraStockRepository {
     return result.rows.map((row) => fromStockMovimientoRow(row as unknown as StockMovimientoRow));
   }
 
-  async findMovimientosPendientes(olderThan = new Date()): Promise<MovimientoStock[]> {
+  async findMovimiento(ventaId: string, loteId: string): Promise<MovimientoStock | null> {
     const result = await this.client.execute(
       `SELECT venta_id, lote_id, sucursal_id, producto_id, vencimiento,
-              cantidad, estado, actualizado_en
+              cantidad, unidades_antes, unidades_despues, estado, actualizado_en
+       FROM ${this.table(stockMovimientosTable)}
+       WHERE venta_id = ? AND lote_id = ?`,
+      [ventaId, loteId],
+      { prepare: true, consistency: readConsistency },
+    );
+
+    const row = result.rows[0] as unknown as StockMovimientoRow | undefined;
+    return row === undefined ? null : fromStockMovimientoRow(row);
+  }
+
+  async findAllMovimientos(): Promise<MovimientoStock[]> {
+    const result = await this.client.execute(
+      `SELECT venta_id, lote_id, sucursal_id, producto_id, vencimiento,
+              cantidad, unidades_antes, unidades_despues, estado, actualizado_en
        FROM ${this.table(stockMovimientosTable)}`,
       [],
       { prepare: true, consistency: readConsistency },
     );
 
-    return result.rows
-      .map((row) => fromStockMovimientoRow(row as unknown as StockMovimientoRow))
-      .filter((movimiento) => movimiento.estado === "PENDIENTE" && movimiento.actualizadoEn < olderThan);
+    return result.rows.map((row) => fromStockMovimientoRow(row as unknown as StockMovimientoRow));
+  }
+
+  async findMovimientosPendientes(olderThan = new Date()): Promise<MovimientoStock[]> {
+    const movimientos = await this.findAllMovimientos();
+
+    return movimientos.filter(
+      (movimiento) => movimiento.estado === "PENDIENTE" && movimiento.actualizadoEn < olderThan,
+    );
   }
 
   async truncate(): Promise<void> {
@@ -118,8 +151,9 @@ export class CassandraStockRepository {
   async claimMovimiento(movimiento: Omit<MovimientoStock, "estado">): Promise<boolean> {
     const result = await this.client.execute(
       `INSERT INTO ${this.table(stockMovimientosTable)}
-        (venta_id, lote_id, sucursal_id, producto_id, vencimiento, cantidad, estado, actualizado_en)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        (venta_id, lote_id, sucursal_id, producto_id, vencimiento, cantidad,
+         unidades_antes, unidades_despues, estado, actualizado_en)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        IF NOT EXISTS`,
       [
         movimiento.ventaId,
@@ -128,9 +162,49 @@ export class CassandraStockRepository {
         movimiento.productoId,
         toLocalDate(movimiento.vencimiento),
         movimiento.cantidad,
+        movimiento.unidadesAntes ?? null,
+        movimiento.unidadesDespues ?? null,
         "PENDIENTE",
         movimiento.actualizadoEn,
       ],
+      { prepare: true, consistency: writeConsistency, serialConsistency },
+    );
+
+    return result.wasApplied();
+  }
+
+  async marcarAplicado(
+    ventaId: string,
+    loteId: string,
+    unidadesAntes: number,
+    unidadesDespues: number,
+    actualizadoEn = new Date(),
+  ): Promise<boolean> {
+    const result = await this.client.execute(
+      `UPDATE ${this.table(stockMovimientosTable)}
+       SET estado = ?, unidades_antes = ?, unidades_despues = ?, actualizado_en = ?
+       WHERE venta_id = ? AND lote_id = ?
+       IF estado = ?`,
+      ["APLICADO", unidadesAntes, unidadesDespues, actualizadoEn, ventaId, loteId, "PENDIENTE"],
+      { prepare: true, consistency: writeConsistency, serialConsistency },
+    );
+
+    return result.wasApplied();
+  }
+
+  async actualizarIntentoMovimiento(
+    ventaId: string,
+    loteId: string,
+    unidadesAntes: number,
+    unidadesDespues: number,
+    actualizadoEn = new Date(),
+  ): Promise<boolean> {
+    const result = await this.client.execute(
+      `UPDATE ${this.table(stockMovimientosTable)}
+       SET unidades_antes = ?, unidades_despues = ?, actualizado_en = ?
+       WHERE venta_id = ? AND lote_id = ?
+       IF estado = ?`,
+      [unidadesAntes, unidadesDespues, actualizadoEn, ventaId, loteId, "PENDIENTE"],
       { prepare: true, consistency: writeConsistency, serialConsistency },
     );
 
@@ -155,6 +229,26 @@ export class CassandraStockRepository {
        WHERE sucursal_id = ? AND producto_id = ? AND vencimiento = ? AND lote_id = ?
        IF unidades = ?`,
       [unidadesActuales - cantidad, sucursalId, productoId, toLocalDate(vencimiento), loteId, unidadesActuales],
+      { prepare: true, consistency: writeConsistency, serialConsistency },
+    );
+
+    return result.wasApplied();
+  }
+
+  async incrementarLoteConCAS(
+    sucursalId: string,
+    productoId: string,
+    vencimiento: Date,
+    loteId: string,
+    cantidad: number,
+    unidadesActuales: number,
+  ): Promise<boolean> {
+    const result = await this.client.execute(
+      `UPDATE ${this.table(stockLotesTable)}
+       SET unidades = ?
+       WHERE sucursal_id = ? AND producto_id = ? AND vencimiento = ? AND lote_id = ?
+       IF unidades = ?`,
+      [unidadesActuales + cantidad, sucursalId, productoId, toLocalDate(vencimiento), loteId, unidadesActuales],
       { prepare: true, consistency: writeConsistency, serialConsistency },
     );
 

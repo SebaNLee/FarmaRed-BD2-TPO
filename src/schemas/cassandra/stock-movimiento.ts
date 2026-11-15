@@ -10,4 +10,6 @@ export type StockMovimientoRow = {
   cantidad: number;
   estado: EstadoMovimientoStock;
   actualizado_en: Date;
+  unidades_antes?: number | null;
+  unidades_despues?: number | null;
 };
