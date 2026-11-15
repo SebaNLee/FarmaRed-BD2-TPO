@@ -15,7 +15,44 @@
 
 ### Codespaces
 
-<!-- TODO guia devcontainers -->
+1. Abrir este repositorio en GitHub e iniciar sesión con una cuenta con acceso a Codespaces.
+2. Ir a **Code → Codespaces → ⋯ → New with options**, seleccionar la rama que se quiere probar y crear el Codespace. Ver la [guía de GitHub](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository?tool=webui).
+3. Esperar a que termine la configuración del contenedor y el arranque de las bases. Cassandra puede tardar varios minutos; el arranque espera hasta 600 segundos.
+
+La configuración de [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json) instala Node.js 26, pnpm 12.18.0 y Docker. Al crear el contenedor ejecuta `pnpm install --frozen-lockfile` y copia `.env.example` a `.env` si no existe. En cada inicio ejecuta `docker compose up -d --wait --wait-timeout 600` para levantar MongoDB y Cassandra.
+
+El `.env` generado usa estos valores, adecuados para ejecutar los scripts desde la terminal del Codespace:
+
+```dotenv
+MONGO_URI=mongodb://127.0.0.1:27017/?replicaSet=rs0
+MONGO_DB=farmared
+CASSANDRA_CONTACT_POINTS=127.0.0.1:9042
+CASSANDRA_LOCAL_DATACENTER=datacenter1
+CASSANDRA_KEYSPACE=farmared
+TZ=America/Argentina/Buenos_Aires
+```
+
+MongoDB se inicia como replica set `rs0` para permitir transacciones. No hace falta cambiar los hosts a nombres de servicio ni publicar los puertos: los scripts se ejecutan dentro del Codespace. `.env` está excluido de Git.
+
+En la terminal, desde la raíz del repositorio, verificar los servicios:
+
+```bash
+docker compose ps
+pnpm db:check
+```
+
+Ambos servicios deben aparecer como `healthy` y `db:check` debe confirmar las dos conexiones. Después, ejecutar los comandos de [Cargar datos](#cargar-datos) y las consultas de la [tabla](#queries), por ejemplo `pnpm q1`.
+
+Si la configuración inicial no terminó, se puede repetir desde la terminal:
+
+```bash
+pnpm install --frozen-lockfile
+cp -n .env.example .env
+docker compose up -d --wait --wait-timeout 600
+pnpm db:check
+```
+
+Si un servicio no llega a estar disponible, revisar `docker compose logs mongo cassandra`. Para detener las bases, usar `docker compose down`; los datos se conservan en volúmenes mientras se conserve el Codespace.
 
 ### Data
 
