@@ -65,18 +65,6 @@ async function resultadoTerminal(
   return null;
 }
 
-/**
- * q14 — Registro de una venta `Completada`.
- *
- * Valida cliente, farmacéutico, sucursal, productos y receta; calcula el total;
- * aplica stock en Cassandra mediante q15 y, recién entonces, confirma la venta
- * y la receta en una transacción Mongo.
- *
- * Si se recibe `ventaId`, se usa como clave de idempotencia; si no, se genera
- * en el servidor.
- *
- * Motores: Mongo (venta, receta y operación de coordinación) + Cassandra (stock).
- */
 export async function registrarVenta(
   input: RegistrarVentaInput,
   dependencies: RegistrarVentaDependencies,
