@@ -12,17 +12,13 @@ export type IngresosPorFarmaceutico = {
 /**
  * Q11: devuelve los ingresos del mes actual de TODOS los farmacéuticos.
  * Suma solo ventas 'Completada'.
- *
- * // TODO : esto noc si esta bien,
- * si un farmaceutico no tiene ventas completadas, lo incluimos pero con ventas=0
- * por ahi no habria que incluirlo en la respuesta. no dice nada el pdf
  */
-export async function ingresosPorFarmaceuticoMesActual(db: Db): Promise<IngresosPorFarmaceutico[]> {
+export async function ingresosPorFarmaceuticoMesActual(db: Db, now = new Date()): Promise<IngresosPorFarmaceutico[]> {
   const fechaActual = new Intl.DateTimeFormat("en-US", {
     timeZone: env.TZ,
     year: "numeric",
     month: "numeric",
-  }).formatToParts(new Date());
+  }).formatToParts(now);
   const year = Number(fechaActual.find((part) => part.type === "year")!.value);
   const month = Number(fechaActual.find((part) => part.type === "month")!.value);
 
