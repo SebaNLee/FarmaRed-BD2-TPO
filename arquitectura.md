@@ -67,6 +67,8 @@ CREATE TABLE farmared.stock_movimientos (
   producto_id text,
   vencimiento date,
   cantidad int,
+  unidades_antes int,
+  unidades_despues int,
   estado text,
   actualizado_en timestamp,
   PRIMARY KEY ((venta_id), lote_id)
@@ -81,19 +83,22 @@ Estados:
 
 Esta tabla no es una de las 15 consultas: es un ledger interno para idempotencia, auditoría y compensación.
 
+`unidades_antes` y `unidades_despues` guardan la evidencia del CAS. Si un movimiento queda `PENDIENTE` por un timeout, el reconciliador puede comparar el lote actual con esos valores para intentar resolverlo; si hay concurrencia y no coincide ninguno, queda `INDETERMINADO` para revisión.
+
 ## 4. Matriz entidad → motor
 
-| Entidad / caso       | Motor     | Modelo                               |
-| -------------------- | --------- | ------------------------------------ |
-| Clientes             | Mongo     | Colección `clientes`, DNI único      |
-| Proveedores          | Mongo     | Colección `proveedores`              |
-| Productos            | Mongo     | Colección `productos`, `proveedorId` |
-| Sucursales           | Mongo     | Colección `sucursales`               |
-| Farmacéuticos        | Mongo     | Colección `farmaceuticos`            |
-| Recetas              | Mongo     | Colección `recetas`                  |
-| Ventas + detalle     | Mongo     | Documento con `detalles` embebidos   |
-| Stock actual         | Cassandra | `stock_lotes`                        |
-| Movimientos de stock | Cassandra | `stock_movimientos`                  |
+| Entidad / caso              | Motor     | Modelo                                      |
+| --------------------------- | --------- | ------------------------------------------- |
+| Clientes                    | Mongo     | Colección `clientes`, DNI único             |
+| Proveedores                 | Mongo     | Colección `proveedores`                     |
+| Productos                   | Mongo     | Colección `productos`, `proveedorId`        |
+| Sucursales                  | Mongo     | Colección `sucursales`                      |
+| Farmacéuticos               | Mongo     | Colección `farmaceuticos`                   |
+| Recetas                     | Mongo     | Colección `recetas`                         |
+| Ventas + detalle            | Mongo     | Documento con `detalles` embebidos          |
+| Operaciones de coordinación | Mongo     | `operaciones_venta`, idempotencia y bloqueo |
+| Stock actual                | Cassandra | `stock_lotes`                               |
+| Movimientos de stock        | Cassandra | `stock_movimientos`                         |
 
 ## 5. Relaciones entre motores
 
@@ -101,24 +106,25 @@ Mongo y Cassandra no comparten transacciones. Las relaciones se resuelven así:
 
 - **q01**: Mongo `$lookup` de `productos` a `proveedores`.
 - **q08**: Cassandra devuelve los lotes con menos de 50 unidades; la aplicación busca producto y proveedor en Mongo y combina.
-- **q14/q15**: la venta y la receta se escriben en Mongo; el stock se descuenta en Cassandra. La coordinación es una saga con compensación.
+- **q14/q15**: la venta y la receta se escriben en Mongo **después** de aplicar el stock en Cassandra. La coordinación es una saga orquestada con compensación. La venta `Completada` es el marcador de commit; el stock se aplica antes para no tener que compensar documentos de negocio.
 
-## 6. q15 y consistencia
+## 6. q14/q15 y consistencia
 
-Flujo simplificado:
+Flujo simplificado (stock primero):
 
 ```
-1. Validar venta, cliente, farmacéutico, productos y receta (Mongo).
-2. Para cada ítem, leer lotes FEFO en stock_lotes.
-3. Por cada lote:
+1. Validar venta, cliente, farmacéutico, sucursal, productos y receta (Mongo).
+2. Crear/retomar una operación de coordinación en `operaciones_venta` (Mongo).
+3. Para cada ítem, leer lotes FEFO en stock_lotes.
+4. Por cada lote:
    a. INSERT stock_movimientos ... IF NOT EXISTS  (PENDIENTE)
    b. UPDATE stock_lotes ... SET unidades = ? IF unidades = ?   (CAS con LWT)
    c. UPDATE stock_movimientos ... estado = APLICADO
-4. Insertar venta + actualizar receta en una transacción Mongo.
-5. Si falla algo, revertir los movimientos APLICADOS en orden inverso.
+5. Transacción Mongo: insertar venta Completada + actualizar receta + marcar operación CONFIRMADA.
+6. Si falla algo antes del commit, revertir los movimientos APLICADOS en orden inverso y marcar la operación ABORTADA.
 ```
 
-La tabla `stock_movimientos` permite que un reintento no descuente dos veces y que la compensación sepa qué lotes reponer.
+La tabla `stock_movimientos` permite que un reintento no descuente dos veces y que la compensación sepa qué lotes reponer. La colección `operaciones_venta` es un registro mínimo de coordinación: `PENDIENTE`, `CONFIRMADA` o `ABORTADA`, con `_id = ventaId` y `bloqueo`. No guarda el payload de la venta, ni snapshots de receta, ni el estado del stock; eso vive en `ventas`, `recetas`, `stock_lotes` y `stock_movimientos`. No es una venta ni reemplaza al estado de negocio `Completada`/`Pendiente`/`Anulada`.
 
 ### 6.1 Niveles de consistencia
 
@@ -163,6 +169,9 @@ Es aceptable por el volumen del trabajo (30 lotes) y porque q08 es un reporte. *
 ## 9. Limitaciones
 
 - RF=1 en desarrollo: sin tolerancia a fallos.
-- La ventana entre el descuento de stock y el `APLICADO` puede dejar un `PENDIENTE` ambiguo; se documenta y se reporta con `cassandra:reconcile`.
+- La ventana entre el descuento de stock y el `APLICADO` puede dejar un `PENDIENTE` ambiguo; se documenta y se resuelve con `reconciliarOperaciones` o revisión manual.
+- El stock se descuenta antes de que la venta exista: q08 y los reportes de stock pueden ver una baja temporaria. Es el lado seguro para no sobrevender.
+- `operaciones_venta` conserva operaciones `ABORTADA` como auditoría; no son ventas.
 - q08 hace un scan completo.
 - La saga es de tipo at-least-once con operaciones idempotentes; no hay exactly-once.
+- q15 público sobre una venta preexistente que falla no cambia el estado de negocio de la venta; es un servicio de stock.

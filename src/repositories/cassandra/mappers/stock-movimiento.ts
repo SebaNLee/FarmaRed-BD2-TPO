@@ -13,6 +13,8 @@ export function toStockMovimientoRow(movimiento: MovimientoStock): StockMovimien
     cantidad: movimiento.cantidad,
     estado: movimiento.estado,
     actualizado_en: movimiento.actualizadoEn,
+    unidades_antes: movimiento.unidadesAntes ?? null,
+    unidades_despues: movimiento.unidadesDespues ?? null,
   };
 }
 
@@ -26,6 +28,8 @@ export function fromStockMovimientoRow(row: StockMovimientoRow): MovimientoStock
     cantidad: row.cantidad,
     estado: row.estado,
     actualizadoEn: row.actualizado_en,
+    unidadesAntes: row.unidades_antes ?? undefined,
+    unidadesDespues: row.unidades_despues ?? undefined,
   };
 }
 

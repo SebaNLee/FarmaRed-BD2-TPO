@@ -9,4 +9,6 @@ export type MovimientoStock = {
   cantidad: number;
   estado: EstadoMovimientoStock;
   actualizadoEn: Date;
+  unidadesAntes?: number;
+  unidadesDespues?: number;
 };

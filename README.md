@@ -38,10 +38,10 @@ Requieren MongoDB levantado y `pnpm mongo:setup` / `pnpm mongo:load` ejecutados.
 
 ### Arquitectura
 
-| Motor     | Datos                                                                                              | Motivo                                                                                          |
-| --------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| MongoDB   | clientes, proveedores, productos, sucursales, farmacéuticos, recetas y ventas con detalle embebido | Documentos con estructura jerárquica, agregaciones y consultas por múltiples atributos          |
-| Cassandra | `stock_lotes` y `stock_movimientos`                                                                | Actualizaciones concurrentes por lote, FEFO por vencimiento y control de stock negativo con LWT |
+| Motor     | Datos                                                                                                                   | Motivo                                                                                           |
+| --------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| MongoDB   | clientes, proveedores, productos, sucursales, farmacéuticos, recetas, ventas con detalle embebido y `operaciones_venta` | Documentos con estructura jerárquica, agregaciones, transacciones y coordinación de la operación |
+| Cassandra | `stock_lotes` y `stock_movimientos`                                                                                     | Actualizaciones concurrentes por lote, FEFO por vencimiento y control de stock negativo con LWT  |
 
 ## Devs
 
@@ -99,3 +99,5 @@ pnpm cassandra:load --reset
 | `pnpm cassandra:setup` | Crea keyspace y tablas de stock           |
 | `pnpm cassandra:load`  | Carga los lotes en Cassandra              |
 | `pnpm cassandra:check` | Muestra conteo y muestra FEFO             |
+
+> **q14/q15:** q14 registra la venta `Completada` y q15 aplica stock FEFO con LWT; el stock se aplica antes del commit Mongo, así que si falla no queda venta ni receta modificada.
