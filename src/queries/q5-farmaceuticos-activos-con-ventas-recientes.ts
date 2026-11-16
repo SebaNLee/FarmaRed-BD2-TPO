@@ -9,7 +9,8 @@ export type FarmaceuticoConVentasRecientes = {
 
 function getFechaHace60Dias(now: Date): Date {
   const fecha = new Date(now);
-  fecha.setDate(fecha.getDate() - 60);
+  fecha.setUTCHours(0, 0, 0, 0);
+  fecha.setUTCDate(fecha.getUTCDate() - 60);
   return fecha;
 }
 

@@ -21,12 +21,11 @@ export async function topProductosMasVendidos(db: Db): Promise<ProductoMasVendid
       { $match: { estado: "Completada" } },
       { $unwind: "$detalles" },
       { $group: { _id: "$detalles.productoId", unidadesVendidas: { $sum: "$detalles.cantidad" } } },
-      { $sort: orden },
-      { $limit: 5 },
       { $lookup: { from: "productos", localField: "_id", foreignField: "_id", as: "producto" } },
       { $unwind: "$producto" },
       { $replaceRoot: { newRoot: { $mergeObjects: ["$producto", { unidadesVendidas: "$unidadesVendidas" }] } } },
       { $sort: orden },
+      { $limit: 5 },
     ])
     .toArray();
 
