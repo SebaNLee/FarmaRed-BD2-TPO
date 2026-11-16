@@ -2,7 +2,10 @@
 
 ## Members
 
-<!-- TODO -->
+Domínguez, Lautaro Ezequiel (L.65723)
+Kim, Hwa Pyoung (L.62129)
+Lee, Sebastían Nicolás (L.64675)
+Pizzuto Beltran, Lorenzo (L.64123)
 
 ## Stack
 
