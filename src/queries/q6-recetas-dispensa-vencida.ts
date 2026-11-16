@@ -1,10 +1,13 @@
 import type { Db } from "mongodb";
 import { env } from "../config/env.js";
+import type { Cliente } from "../models/cliente.js";
+import type { Receta } from "../models/receta.js";
 import type { ClienteMongoDocument } from "../schemas/mongo/cliente.js";
 import type { RecetaMongoDocument } from "../schemas/mongo/receta.js";
 import { fromDateOnlyString } from "../utils/date.js";
+import { withId } from "./util/mappers.js";
 
-export type RecetaConCliente = RecetaMongoDocument & { cliente: ClienteMongoDocument };
+export type RecetaConCliente = Receta & { cliente: Cliente };
 
 /**
  * Q6: devuelve recetas de tratamiento prolongado en estado 'Vigente' cuya
@@ -25,13 +28,18 @@ export async function recetasProlongadasConDispensaVencida(db: Db): Promise<Rece
   const day = fechaActual.find((part) => part.type === "day")!.value;
   const hoy = fromDateOnlyString(`${year}-${month}-${day}`);
 
-  return db
+  const recetas = await db
     .collection<RecetaMongoDocument>("recetas")
-    .aggregate<RecetaConCliente>([
+    .aggregate<RecetaMongoDocument & { cliente: ClienteMongoDocument }>([
       { $match: { tipo: "Tratamiento prolongado", estado: "Vigente", proximaDispensa: { $lt: hoy } } },
       { $lookup: { from: "clientes", localField: "clienteId", foreignField: "_id", as: "cliente" } },
       { $unwind: "$cliente" },
       { $sort: { proximaDispensa: 1, _id: 1 } },
     ])
     .toArray();
+
+  return recetas.map(({ cliente, ...receta }): RecetaConCliente => ({
+    ...withId(receta),
+    cliente: withId(cliente),
+  }));
 }

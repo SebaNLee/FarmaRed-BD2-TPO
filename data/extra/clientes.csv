@@ -1,0 +1,11 @@
+id_cliente,nombre,apellido,dni,email,telefono,ciudad,provincia,obra_social,nro_afiliado,activo
+C009,Valentina,Sosa,41000001,valentina.sosa@example.com,1145000009,Buenos Aires,Buenos Aires,OSDE,OS-900009,True
+C010,Ezequiel,Ferreyra,41000002,ezequiel.ferreyra@example.com,1145000010,Buenos Aires,Buenos Aires,PAMI,PA-800010,True
+C011,Camila,Ríos,41000003,camila.rios@example.com,1145000011,Buenos Aires,Buenos Aires,Swiss Medical,SM-900011,True
+C012,Tomás,Medina,41000004,tomas.medina@example.com,2235000012,Mar del Plata,Buenos Aires,IOMA,IO-800012,True
+C013,Graciela,Luna,41000005,graciela.luna@example.com,2215000013,La Plata,Buenos Aires,Sin cobertura,,False
+C014,Nicolás,Castro,41000006,nicolas.castro@example.com,3425000014,Santa Fe,Santa Fe,Galeno,GA-800014,True
+C015,Agustina,Herrera,41000007,agustina.herrera@example.com,1145000015,Quilmes,Buenos Aires,OSDE,OS-900015,True
+C016,Facundo,Silva,41000008,facundo.silva@example.com,2215000016,La Plata,Buenos Aires,Sin cobertura,,True
+C017,Micaela,Ortiz,41000009,micaela.ortiz@example.com,2235000017,Mar del Plata,Buenos Aires,PAMI,PA-800017,True
+C018,Joaquín,Morales,41000010,joaquin.morales@example.com,3535000018,Villa María,Córdoba,Swiss Medical,SM-900018,True

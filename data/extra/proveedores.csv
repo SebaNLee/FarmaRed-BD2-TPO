@@ -1,0 +1,11 @@
+id_proveedor,razon_social,cuit,tipo,ciudad,provincia,telefono,activo
+PRV006,Laboratorios del Plata S.A.,30-72000111-2,Laboratorio,La Plata,Buenos Aires,2214301100,True
+PRV007,Laboratorio San Rafael S.R.L.,30-72000222-3,Laboratorio,Córdoba,Córdoba,3514302200,True
+PRV008,Droguería del Centro S.A.,30-72000333-4,Droguería,Rosario,Santa Fe,3414303300,True
+PRV009,BioLitoral Laboratorios S.A.,30-72000444-5,Laboratorio,Santa Fe,Santa Fe,3424304400,True
+PRV010,Droguería Norte Salud S.R.L.,30-72000555-6,Droguería,San Isidro,Buenos Aires,1143305500,True
+PRV011,Laboratorios Andinos del Sur S.A.,30-72000666-7,Laboratorio,Bahía Blanca,Buenos Aires,2914306600,True
+PRV012,Droguería Mar del Plata S.A.,30-72000777-8,Droguería,Mar del Plata,Buenos Aires,2234307700,True
+PRV013,Farmacéutica Central S.R.L.,30-72000888-9,Laboratorio,Buenos Aires,Buenos Aires,1143308800,True
+PRV014,Laboratorios del Litoral S.A.,30-72000999-0,Laboratorio,Rosario,Santa Fe,3414309900,True
+PRV015,Droguería Oeste S.A.,30-72001000-1,Droguería,Morón,Buenos Aires,1143310000,False

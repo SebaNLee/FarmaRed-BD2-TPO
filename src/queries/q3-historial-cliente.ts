@@ -3,7 +3,7 @@ import type { Receta } from "../models/receta.js";
 import type { Venta } from "../models/venta.js";
 import type { VentaMongoDocument } from "../schemas/mongo/venta.js";
 
-type VentaHistorial = Omit<Venta, "clienteId"> & {
+type VentaHistorial = Omit<Venta, "clienteId" | "fecha"> & {
   detalles: Array<{
     id: string;
     productoId: string;

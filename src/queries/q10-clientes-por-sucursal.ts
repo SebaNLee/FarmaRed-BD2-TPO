@@ -1,6 +1,8 @@
 import type { Db } from "mongodb";
+import type { Cliente } from "../models/cliente.js";
 import type { ClienteMongoDocument } from "../schemas/mongo/cliente.js";
 import type { FarmaceuticoMongoDocument } from "../schemas/mongo/farmaceutico.js";
+import { withId } from "./util/mappers.js";
 
 /**
  * Q10: devuelve los clientes atendidos en una sucursal, sin duplicados.
@@ -8,10 +10,10 @@ import type { FarmaceuticoMongoDocument } from "../schemas/mongo/farmaceutico.js
  * incluyendo todos los estados de venta, incluso 'Anulada'.
  * Incluye también clientes inactivos.
  *
- *  retorna clientes ordenados por apellido, nombre e _id;
+ *  retorna clientes ordenados por apellido, nombre e id;
  */
-export async function clientesPorSucursal(db: Db, sucursalId: string): Promise<ClienteMongoDocument[]> {
-  return db
+export async function clientesPorSucursal(db: Db, sucursalId: string): Promise<Cliente[]> {
+  const clientes = await db
     .collection<FarmaceuticoMongoDocument>("farmaceuticos")
     .aggregate<ClienteMongoDocument>([
       { $match: { sucursalId } },
@@ -38,4 +40,6 @@ export async function clientesPorSucursal(db: Db, sucursalId: string): Promise<C
       { $sort: { apellido: 1, nombre: 1, _id: 1 } },
     ])
     .toArray();
+
+  return clientes.map((cliente): Cliente => withId(cliente));
 }

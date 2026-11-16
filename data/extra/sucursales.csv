@@ -1,0 +1,11 @@
+id_sucursal,nombre,tipo,direccion,ciudad,provincia,telefono,activo
+S006,Farmacia Palermo Norte,Farmacia,Av. Córdoba 2450,Buenos Aires,Buenos Aires,1148006006,True
+S007,Farmacia Mar del Plata Centro,Farmacia,San Martín 1800,Mar del Plata,Buenos Aires,2234007007,True
+S008,Farmacia Córdoba Nueva,Farmacia,Av. Colón 850,Córdoba,Córdoba,3514008008,True
+S009,Farmacia Villa María,Farmacia,General Paz 120,Villa María,Córdoba,3534009009,True
+S010,Farmacia La Plata Sur,Farmacia,Calle 7 1450,La Plata,Buenos Aires,2214010010,True
+S011,Farmacia Rosario Sur,Farmacia,Bv. Oroño 2100,Rosario,Santa Fe,3414011011,True
+S012,Farmacia Santa Fe Centro,Farmacia,San Jerónimo 3200,Santa Fe,Santa Fe,3424012012,True
+S013,Farmacia Quilmes Oeste,Farmacia,Rivadavia 4100,Quilmes,Buenos Aires,1148013013,True
+S014,Farmacia San Isidro (cerrada),Farmacia,Av. Centenario 1500,San Isidro,Buenos Aires,1146014014,False
+S015,Droguería Rosario,Droguería,Ruta 33 km 8,Rosario,Santa Fe,3416015015,True

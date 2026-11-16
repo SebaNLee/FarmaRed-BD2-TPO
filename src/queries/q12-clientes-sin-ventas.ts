@@ -1,15 +1,17 @@
 import dayjs from "dayjs";
 import type { Db } from "mongodb";
 import { env } from "../config/env.js";
+import type { Cliente } from "../models/cliente.js";
 import type { ClienteMongoDocument } from "../schemas/mongo/cliente.js";
 import { fromDateOnlyString } from "../utils/date.js";
+import { withId } from "./util/mappers.js";
 
 /**
  * Q12: devuelve clientes sin ventas en el último año.
  * Incluye clientes inactivos y sin compras. Cuenta todos los estados
  * de venta (Osea si tiene ventas canceladas queda excluido)
  */
-export async function clientesSinVentasUltimoAnio(db: Db): Promise<ClienteMongoDocument[]> {
+export async function clientesSinVentasUltimoAnio(db: Db): Promise<Cliente[]> {
   const fechaActual = new Intl.DateTimeFormat("en-US", {
     timeZone: env.TZ,
     year: "numeric",
@@ -24,7 +26,7 @@ export async function clientesSinVentasUltimoAnio(db: Db): Promise<ClienteMongoD
   const desde = fromDateOnlyString(hoy.subtract(1, "year").format("YYYY-MM-DD"));
   const hasta = fromDateOnlyString(hoy.add(1, "day").format("YYYY-MM-DD"));
 
-  return db
+  const clientes = await db
     .collection<ClienteMongoDocument>("clientes")
     .aggregate<ClienteMongoDocument>([
       {
@@ -41,4 +43,6 @@ export async function clientesSinVentasUltimoAnio(db: Db): Promise<ClienteMongoD
       { $sort: { apellido: 1, nombre: 1, _id: 1 } },
     ])
     .toArray();
+
+  return clientes.map((cliente): Cliente => withId(cliente));
 }

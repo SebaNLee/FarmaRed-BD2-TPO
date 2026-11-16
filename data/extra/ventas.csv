@@ -1,0 +1,11 @@
+id_venta,id_cliente,id_farmaceutico,id_receta,fecha,tipo,medio_pago,total,estado
+V017,C011,F008,,2026-11-05,Venta libre,Débito,15700,Completada
+V018,C012,F009,RC013,2026-11-07,Con receta,Obra social,7800,Completada
+V019,C015,F016,,2026-11-12,Venta libre,Débito,3600,Pendiente
+V020,C016,F008,RC015,2026-11-08,Con receta,Obra social,4500,Anulada
+V021,C017,F009,,2026-11-09,Venta libre,Transferencia,29000,Completada
+V022,C016,F008,,2026-11-10,Venta libre,Efectivo,4500,Completada
+V023,C010,F010,RC017,2025-10-01,Con receta,Obra social,18500,Completada
+V024,C013,F013,RC018,2026-09-01,Con receta,Obra social,4500,Completada
+V025,C011,F016,,2026-11-13,Venta libre,Crédito,1800,Completada
+V026,C018,F014,RC016,2026-11-02,Con receta,Obra social,6500,Pendiente

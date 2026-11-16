@@ -1,0 +1,11 @@
+id_farmaceutico,nombre,apellido,matricula,cargo,id_sucursal,activo
+F008,Valeria,Núñez,MN-18500,Director Técnico,S006,True
+F009,Andrés,Verón,MN-18501,Farmacéutico,S007,True
+F010,Liliana,Aguirre,MN-18502,Farmacéutico,S001,False
+F011,Diego,Sarmiento,MN-18503,Farmacéutico,S008,True
+F012,Sofía,Quintero,MN-18504,Director Técnico,S015,True
+F013,Marcelo,Ríos,MN-18505,Farmacéutico,S002,False
+F014,Paula,Molina,MN-18506,Director Técnico,S009,True
+F015,Ignacio,Vega,MN-18507,Farmacéutico,S010,True
+F016,Luciana,Paz,MN-18508,Farmacéutico,S006,True
+F017,Emiliano,Torres,MN-18509,Farmacéutico,S014,True
